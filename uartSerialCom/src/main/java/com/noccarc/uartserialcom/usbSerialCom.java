@@ -29,13 +29,20 @@ public class usbSerialCom {
         // Description: function to send Data to serial port
 
         System.out.printf("Sending Data to port : %s%n", targetPort);
-        String data = "HelloWorld"; // data to send , later will be handled dynamically
+//        String data = "HelloWorld"; // data to send , later will be handled dynamically
         try {
             OutputStream outputStream = targetPort.getOutputStream();
-            byte[] dataBytes = data.getBytes();
-            outputStream.write(dataBytes);
-            outputStream.flush(); // Flush the output stream to ensure data is sent immediately
-            System.out.println("Successfully sent data to serial port.");
+            while (true)
+            { // Continue sending data indefinitely
+                String data = "HelloWorld"; // Data to send, you can modify this as needed
+                byte[] dataBytes = data.getBytes();
+                outputStream.write(dataBytes);
+                outputStream.flush(); // Flush the output stream to ensure data is sent immediately
+                System.out.println("Successfully sent data to serial port.");
+
+                // Add a delay if needed to control the sending rate
+                Thread.sleep(5000);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,8 +53,8 @@ public class usbSerialCom {
 
     static  void  receiveData(SerialPort targetPort)
     {
-        // Description: function to receive data from serial Port
 
+        // Description: function to receive data from serial Port
         System.out.printf("Receiving Data from port : %s%n",targetPort);
         try {
 
@@ -96,12 +103,16 @@ public class usbSerialCom {
                 {
                     System.out.println("Port is Opened Successfully. Available For sending & receiving Data.");
 
+                    // start Receive Thread
+                    Thread rxThread = new Thread(()->receiveData(targetPort));
+                    rxThread.start();
+
                     //send Data
                     sendData(targetPort);
 
                     //receive Data
-                    receiveData(targetPort);
-
+//                    receiveData(targetPort);
+                    
                     //close the port
                     System.out.println("closing port....");
                     targetPort.closePort();
@@ -122,8 +133,7 @@ public class usbSerialCom {
 
 
 
-
-
     }
 
 }
+ 
